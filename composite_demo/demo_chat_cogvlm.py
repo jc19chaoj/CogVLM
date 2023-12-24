@@ -41,8 +41,8 @@ def main(
         return
 
     history: list[Conversation] = st.session_state.chat_history
-    for conversation in history:
-        conversation.show()
+    for idx, conversation in enumerate(history):
+        conversation.show(None, idx==(len(history)-1))
     if retry:
         last_user_conversation_idx = None
         for idx, conversation in enumerate(history):

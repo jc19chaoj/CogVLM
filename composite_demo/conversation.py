@@ -1,5 +1,6 @@
 import requests
 import re
+from baidu_trans.baidu_api import Translator
 import streamlit as st
 
 from dataclasses import dataclass
@@ -50,7 +51,7 @@ class Conversation:
         image (Image, optional): An optional image associated with the conversation turn.
         content_show (str, optional): The content to be displayed in the WebUI. This may differ
             from `content` if translation or other processing is applied.
-        translate （bool, optional): Whether to translate the content of the conversation turn.
+        translate (bool, optional): Whether to translate the content of the conversation turn.
 
     Methods:
         __str__(self) -> str:
@@ -74,7 +75,7 @@ class Conversation:
             case Role.USER | Role.ASSISTANT:
                 return f'{self.role}\n{self.content}'
 
-    def show(self, placeholder: DeltaGenerator | None = None) -> str:
+    def show(self, placeholder: DeltaGenerator | None = None, translate = False) -> str:
         """
         show in markdown formate
         """
@@ -85,7 +86,7 @@ class Conversation:
 
         # for Chinese WebUI show
         if self.role == Role.USER:
-            if self.translate:
+            if False:
                 self.content = translate_baidu(self.content_show, source_lan="zh", target_lan="en")
                 if self.content == "error":
                     self.content_show = "Please Enter your Baidu Translation API Key in function translate_baidu()"
@@ -93,7 +94,12 @@ class Conversation:
                 self.content = self.content_show
         if self.role == Role.ASSISTANT:
             if self.translate:
-                self.content_show = translate_baidu(self.content, source_lan="en", target_lan="zh")
+                self.content_show = self.content
+                if not re.search('[\u4e00-\u9fff]', self.content):
+                    try:
+                        self.content_show += "\n百度翻译：“" + translate_baidu(self.content, source_lan="en", target_lan="zh") + "”"
+                    except:
+                        pass
             else:
                 self.content_show = self.content
 
@@ -204,21 +210,6 @@ def translate_baidu(translate_text, source_lan, target_lan):
         Returns:
             str: The translated text. Returns "error" in case of an exception.
         """
-    url = "https://aip.baidubce.com/rpc/2.0/mt/texttrans/v1?access_token="
-    headers = {'Content-Type': 'application/json'}
-    payload = {
-        'q': translate_text,
-        'from': source_lan,
-        'to': target_lan
-    }
-    try:
-        r = requests.post(url, json=payload, headers=headers)
-        result = r.json()
-        final_translation = ''
 
-        for item in result['result']['trans_result']:
-            final_translation += item['dst'] + '\n'
-    except Exception as e:
-        print(e)
-        return "error"
-    return final_translation
+    translator = Translator()
+    return translator.translate(source_lan, target_lan, translate_text)

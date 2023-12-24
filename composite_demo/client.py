@@ -21,35 +21,34 @@ else:
     warnings.warn("Your GPU does not support bfloat16 type, use fp16 instead")
 
 # if you use all of Our model, include cogagent-chat cogvlm-chat cogvlm-grounding and put it in different devices, you can do like this.
-models_info = {
-    'tokenizer': {
-        'path': os.environ.get('TOKENIZER_PATH', 'lmsys/vicuna-7b-v1.5'),
-    },
-    'agent_chat': {
-        'path': os.environ.get('MODEL_PATH_AGENT_CHAT', 'THDUM/cogagent-chat-hf'),
-        'device': ['cuda:0']
-    },
-    'vlm_chat': {
-        'path': os.environ.get('MODEL_PATH_VLM_CHAT', 'THDUM/cogvlm-chat-hf'),
-        'device': ['cuda:3']
-    },
-    'vlm_grounding': {
-        'path': os.environ.get('MODEL_PATH_VLM_GROUNDING','THDUM/cogvlm-grounding-generalist-hf'),
-        'device': ['cuda:6']
-    }
-}
-
-
-# if you just use one model, use like this
 # models_info = {
 #     'tokenizer': {
 #         'path': os.environ.get('TOKENIZER_PATH', 'lmsys/vicuna-7b-v1.5'),
 #     },
 #     'agent_chat': {
-#         'path': os.environ.get('MODEL_PATH_AGENT_CHAT', 'THUDM/cogagent-chat-hf'),
+#         'path': os.environ.get('MODEL_PATH_AGENT_CHAT', 'THDUM/cogagent-chat-hf'),
 #         'device': ['cuda:0']
 #     },
+#     'vlm_chat': {
+#         'path': os.environ.get('MODEL_PATH_VLM_CHAT', 'THDUM/cogvlm-chat-hf'),
+#         'device': ['cuda:3']
+#     },
+#     'vlm_grounding': {
+#         'path': os.environ.get('MODEL_PATH_VLM_GROUNDING','THDUM/cogvlm-grounding-generalist-hf'),
+#         'device': ['cuda:6']
+#     }
+# }
 
+# if you just use one model, use like this
+models_info = {
+    'tokenizer': {
+        'path': os.environ.get('TOKENIZER_PATH', 'lmsys/vicuna-7b-v1.5'),
+    },
+    'vlm_chat': {
+        'path': os.environ.get('MODEL_PATH_VLM_CHAT', 'THDUM/cogvlm-chat-hf'),
+        'device': ['cuda:0']
+    },
+}
 
 
 @st.cache_resource
@@ -187,7 +186,7 @@ class HFClient(Client):
         # Print user input info
 
         print("\n== Input ==\n", query)
-        print("\n==History==\n", history)
+        print("\n== History ==\n", history)
         print("\n== Model ==\n\n", model.config.name_or_path)
         print("\n== Device ==\n\n", device)
 
